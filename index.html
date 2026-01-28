@@ -1,160 +1,178 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Từ mới giao tiếp</title>
-
-<!-- PapaParse -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#e9eef4;
-}
-.app{
-  max-width:420px;
-  margin:auto;
-  background:#fff;
-  min-height:100vh;
-  padding:16px;
-}
-h1{text-align:center}
-.hidden{display:none}
-.list button{
-  width:100%;
-  padding:14px;
-  margin:6px 0;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  background:#f1f3f6;
-}
-.card{
-  height:220px;
-  border-radius:16px;
-  background:#f6f7fb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  text-align:center;
-  padding:20px;
-}
-.controls button{
-  width:48%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-}
-.good{background:#4caf50;color:#fff}
-.bad{background:#f44336;color:#fff}
-.top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marugoto Learning - V21 U</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --bg: #f8fafc; --primary: #5c6bc0; --app-width: 480px; }
+        body { background-color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; -webkit-tap-highlight-color: transparent; }
+        .app-container { width: 100%; max-width: var(--app-width); min-height: 100vh; background-color: var(--bg); position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.1); overflow-x: hidden; }
+        .screen { display: none; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; }
+        .book-card { width: 100%; min-height: 140px; padding: 30px; border-radius: 35px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; position: relative; border-width: 2px; margin-bottom: 20px; transition: 0.2s; }
+        .word-count { position: absolute; top: 25px; right: 25px; font-size: 0.75rem; font-weight: 800; padding: 6px 14px; border-radius: 99px; background: white; }
+        .flip-card { perspective: 1000px; width: 100%; height: 350px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 40px; padding: 20px; text-align: center; }
+        .card-front { background: white; color: #334155; font-weight: 900; }
+        .card-back { background: var(--primary); color: white; transform: rotateY(180deg); font-weight: 800; }
+        .nav-btn { width: 70px; height: 70px; background: white; border-radius: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #cbd5e1; }
+        .quiz-option { width: 100%; padding: 18px; margin-bottom: 12px; background: white; border-radius: 20px; font-weight: 700; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
+    </style>
 </head>
-
 <body>
-<div class="app">
+    <div class="app-container">
+        <div id="library-screen" class="screen active">
+            <h1 class="text-3xl font-black text-slate-800 my-10 w-full text-left">Giáo Trình</h1>
+            <div id="book-list-container" class="w-full">
+                <div class="text-center p-10"><p class="text-slate-400 font-bold animate-pulse">Đang kết nối dữ liệu...</p></div>
+            </div>
+        </div>
 
-<!-- GIÁO TRÌNH -->
-<div id="library">
-  <h1>Giáo Trình</h1>
-  <p id="loading" style="text-align:center;color:#999">
-    Đang tải dữ liệu...
-  </p>
-  <div id="level-list" class="list"></div>
-</div>
+        <div id="setup-screen" class="screen justify-center">
+            <div class="w-full bg-white rounded-[40px] p-8">
+                <h2 id="setup-title" class="text-xl font-black mb-8 text-center"></h2>
+                <div class="space-y-10">
+                    <div><div class="flex justify-between font-bold"><span>Từ bài:</span><span id="v1" class="text-indigo-600">1</span></div>
+                    <input type="range" id="range1" class="w-full mt-4" oninput="v1.innerText=this.value"></div>
+                    <div><div class="flex justify-between font-bold"><span>Đến bài:</span><span id="v2" class="text-indigo-600">1</span></div>
+                    <input type="range" id="range2" class="w-full mt-4" oninput="v2.innerText=this.value"></div>
+                </div>
+                <button onclick="startStudy()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold mt-12">Bắt đầu học</button>
+                <button onclick="showScreen('library-screen')" class="w-full mt-4 text-slate-400 font-bold">Quay lại</button>
+            </div>
+        </div>
 
-<!-- HỌC -->
-<div id="study" class="hidden">
-  <div class="top">
-    <b id="lesson-name"></b>
-    <span id="card-progress"></span>
-  </div>
+        <div id="flashcard-screen" class="screen">
+            <div class="w-full flex justify-between items-center my-4">
+                <button onclick="showScreen('setup-screen')" class="text-3xl text-slate-300">‹</button>
+                <div class="flex gap-2">
+                    <button onclick="shuffleData()" class="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-bold text-xs">Xáo trộn</button>
+                    <button onclick="initQuiz()" class="bg-red-500 text-white px-5 py-2 rounded-xl font-bold">Quiz</button>
+                </div>
+            </div>
+            <div class="flip-card mt-8" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner" id="card-inner">
+                    <div class="card-front"><span id="front-text" class="text-4xl"></span></div>
+                    <div class="card-back"><span id="back-text" class="text-2xl"></span></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center w-full mt-24">
+                <button onclick="prevCard()" class="nav-btn">‹</button>
+                <div class="text-center"><span id="card-progress" class="text-xs font-bold text-slate-300"></span><br><span id="lesson-name" class="font-bold text-slate-400"></span></div>
+                <button onclick="nextCard()" class="nav-btn">›</button>
+            </div>
+        </div>
 
-  <div class="card" onclick="flipCard()">
-    <div id="front-text"></div>
-    <div id="back-text" class="hidden"></div>
-  </div>
+        <div id="quiz-screen" class="screen">
+            <div class="w-full flex justify-between my-4 items-center">
+                <button onclick="showScreen('flashcard-screen')" class="text-slate-400 font-bold">← Thoát</button>
+                <span id="quiz-progress" class="font-bold text-slate-400"></span>
+                <span class="text-indigo-600 font-bold">Điểm: <span id="score">0</span></span>
+            </div>
+            <div class="w-full bg-white p-10 rounded-[45px] text-center mb-8 min-h-[160px] flex items-center justify-center shadow-sm">
+                <span id="quiz-q" class="font-black text-slate-700 text-3xl text-center"></span>
+            </div>
+            <div id="quiz-options" class="w-full flex flex-col gap-3"></div>
+        </div>
+    </div>
 
-  <div class="controls" style="margin-top:12px">
-    <button class="bad" onclick="next()">❌ Chưa nhớ</button>
-    <button class="good" onclick="next()">✅ Đã nhớ</button>
-  </div>
-</div>
+    <script>
+        // Sử dụng ID Sheet từ link bạn gửi
+        const SHEET_ID = '1LXVDElHMCKBoqwa0fj9E9iui_rllXSOaUPjbz4dSXPo';
+        const SHEET_NAME = 'Từ Mới Tiếng Nhật Giao Tiếp';
 
-</div>
+        let allWords = [], currentVocab = [], curIdx = 0, score = 0;
 
-<script>
-const CSV_URL =
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9uWZ2kz54fpqjGrQ9L-BaPyrA_BXaO50O0aCX-hrpgC18bu6uW0CvIQ4ZVmJxKSbXasHu4M8cWTml/pub?gid=861638906&single=true&output=csv';
+        async function initApp() {
+            // Thay vì fetch CSV trực tiếp, dùng visualization API để tránh lỗi CORS cục bộ
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                allWords = json.table.rows.map(r => ({
+                    h: r.c[0]?.v || "", // Từ mới
+                    n: r.c[1]?.v || "", // Nghĩa
+                    b: r.c[2]?.v || "Khác", // Cấp
+                    l: parseInt(r.c[3]?.v) || 1 // Bài
+                })).filter(w => w.h && w.n);
+                renderLibrary();
+            } catch (e) {
+                alert("Lỗi tải dữ liệu. Hãy tải file này lên Netlify hoặc GitHub Pages!");
+            }
+        }
 
-let data=[], lesson=[], idx=0;
+        function renderLibrary() {
+            const levels = [...new Set(allWords.map(w => w.b))];
+            const colors = ['bg-[#f0fff4]', 'bg-[#fff5f7]', 'bg-[#fffaf0]'];
+            document.getElementById('book-list-container').innerHTML = levels.map((lvl, i) => `
+                <div onclick="selectLevel('${lvl}')" class="book-card ${colors[i % 3]} border-transparent">
+                    <span class="word-count shadow-sm">${allWords.filter(w => w.b === lvl).length} Từ</span>
+                    <h2 class="text-slate-800 text-xl font-black">${lvl}</h2>
+                </div>`).join('');
+        }
 
-Papa.parse(CSV_URL,{
-  download:true,
-  header:true,
-  skipEmptyLines:true,
-  complete:(res)=>{
-    data = res.data.filter(r=>r['Tiếng Nhật'] && r['Tiếng Việt']);
-    renderLibrary();
-  },
-  error:(err)=>{
-    document.getElementById('loading').innerText='❌ Lỗi tải dữ liệu';
-    console.error(err);
-  }
-});
+        function selectLevel(lvl) {
+            document.getElementById('setup-title').innerText = lvl;
+            const words = allWords.filter(w => w.b === lvl);
+            const lessons = words.map(w => w.l);
+            const minL = Math.min(...lessons), maxL = Math.max(...lessons);
+            const r1 = document.getElementById('range1'), r2 = document.getElementById('range2');
+            r1.min = r2.min = minL; r1.max = r2.max = maxL; r1.value = minL; r2.value = maxL;
+            v1.innerText = minL; v2.innerText = maxL;
+            showScreen('setup-screen');
+        }
 
-function renderLibrary(){
-  document.getElementById('loading').remove();
-  const box=document.getElementById('level-list');
+        function startStudy() {
+            const lvl = document.getElementById('setup-title').innerText;
+            const f = parseInt(v1.innerText), t = parseInt(v2.innerText);
+            currentVocab = allWords.filter(w => w.b === lvl && w.l >= f && w.l <= t);
+            curIdx = 0; updateCard(); showScreen('flashcard-screen');
+        }
 
-  const lessons=[...new Set(data.map(d=>d['Bài']))];
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function updateCard() {
+            const item = currentVocab[curIdx];
+            document.getElementById('front-text').innerText = item.h;
+            document.getElementById('back-text').innerText = item.n;
+            document.getElementById('lesson-name').innerText = "Bài " + item.l;
+            document.getElementById('card-progress').innerText = `${curIdx + 1} / ${currentVocab.length}`;
+            document.getElementById('card-inner').parentElement.classList.remove('flipped');
+        }
+        function nextCard() { if (curIdx < currentVocab.length - 1) { curIdx++; updateCard(); } }
+        function prevCard() { if (curIdx > 0) { curIdx--; updateCard(); } }
+        function shuffleData() { currentVocab.sort(() => Math.random() - 0.5); curIdx = 0; updateCard(); }
 
-  lessons.forEach(l=>{
-    const b=document.createElement('button');
-    b.innerText='Bài '+l;
-    b.onclick=()=>startLesson(l);
-    box.appendChild(b);
-  });
-}
+        function initQuiz() { 
+            currentVocab.sort(() => Math.random() - 0.5); 
+            curIdx = 0; score = 0; document.getElementById('score').innerText = '0';
+            renderQuiz(); showScreen('quiz-screen'); 
+        }
 
-function startLesson(l){
-  lesson=data.filter(d=>d['Bài']==l);
-  idx=0;
-  document.getElementById('library').classList.add('hidden');
-  document.getElementById('study').classList.remove('hidden');
-  show();
-}
+        function renderQuiz() {
+            const item = currentVocab[curIdx];
+            document.getElementById('quiz-q').innerText = item.h;
+            document.getElementById('quiz-progress').innerText = `${curIdx + 1} / ${currentVocab.length}`;
+            let opts = [item.n];
+            while(opts.length < 4) {
+                let r = allWords[Math.floor(Math.random() * allWords.length)].n;
+                if(!opts.includes(r)) opts.push(r);
+            }
+            opts.sort(() => Math.random() - 0.5);
+            document.getElementById('quiz-options').innerHTML = opts.map(o => `<button class="quiz-option" onclick="checkQuiz('${o}', '${item.n}')">${o}</button>`).join('');
+        }
 
-function show(){
-  const w=lesson[idx];
-  document.getElementById('front-text').innerText=w['Tiếng Nhật'];
-  document.getElementById('back-text').innerText=w['Tiếng Việt'];
-  document.getElementById('back-text').classList.add('hidden');
-  document.getElementById('lesson-name').innerText='Bài '+w['Bài'];
-  document.getElementById('card-progress').innerText=
-    `${idx+1}/${lesson.length}`;
-}
+        function checkQuiz(s, c) {
+            if(s === c) { score++; document.getElementById('score').innerText = score; }
+            if(curIdx < currentVocab.length - 1) { curIdx++; renderQuiz(); } 
+            else { alert("Xong! Điểm: " + score); showScreen('library-screen'); }
+        }
 
-function flipCard(){
-  document.getElementById('back-text').classList.toggle('hidden');
-}
-
-function next(){
-  idx++;
-  if(idx>=lesson.length){
-    alert('🎉 Hoàn thành!');
-    location.reload();
-  }else show();
-}
-</script>
+        initApp();
+    </script>
 </body>
 </html>
