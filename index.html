@@ -27,18 +27,18 @@
         .ctrl-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 20px; }
-
-        /* CSS CHO HIỆU ỨNG LẬT 3D (CHỈ THÊM PHẦN NÀY) */
-        .flip-container { width: 100%; height: 240px; perspective: 1000px; margin-bottom: 30px; }
-        .flipper { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
-        .flipper.flipped { transform: rotateY(180deg); }
-        .box-wrapper { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px 15px; text-align: center; background: #fff; }
-        .box-back { transform: rotateY(180deg); background: var(--primary) !important; color: #fff !important; }
         
-        #main-txt-container, #main-txt-container-back { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        #main-txt, #main-txt-back { font-weight: 900; color: #1e293b; white-space: nowrap; display: inline-block; line-height: 1; }
-        #main-txt-back { color: #fff; }
+        /* Box styles */
+        .box-wrapper { width: 100%; height: 240px; perspective: 1000px; margin-bottom: 30px; cursor: pointer; }
+        .box-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .box-wrapper.is-flipped .box-inner { transform: rotateY(180deg); }
+        .box-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); background: #fff; }
+        .box-back { background: var(--primary); color: #fff; transform: rotateY(180deg); }
+        
+        #main-txt-container { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #main-txt { font-weight: 900; color: #1e293b; white-space: nowrap; display: inline-block; line-height: 1; }
         #sub-txt { font-size: 18px; color: var(--gray); margin-top: 10px; font-weight: 500; min-height: 20px; }
+        #back-txt { font-weight: 900; line-height: 1.1; }
 
         .review-actions { display: flex; gap: 60px; margin-bottom: 40px; }
         .action-btn { width: 70px; height: 70px; border-radius: 25px; border: 2.5px solid #e2e8f0; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; }
@@ -60,33 +60,36 @@
         .range-val { font-size: 24px; font-weight: bold; color: var(--primary); }
         .start-btn { width:100%; height:60px; background:#1e293b; color:#fff; border:none; border-radius:15px; font-size:18px; font-weight:bold; margin-top:20px; }
 
-        .review-all-btn { width: 100%; padding: 20px; background: #fff; border: 2px dashed var(--red); color: var(--red); border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 10px; }
+        /* PHẦN CHỈNH SỬA: MỖI HÀNG 1 GIÁO TRÌNH */
+        .book-item-btn {
+            width: 100%;
+            padding: 22px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.1s;
+        }
+        .book-item-btn:active { transform: scale(0.98); }
 
-        .book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
-        .book-card { background: #fff; border-radius: 20px; padding: 20px 15px; display: flex; flex-direction: column; position: relative; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); transition: transform 0.2s; }
-        .book-card:active { transform: scale(0.96); }
-        .book-card.color-0 { background: #fff1f2; } .book-card.color-1 { background: #eff6ff; }
-        .book-card.color-2 { background: #f0fdf4; } .book-card.color-3 { background: #fffbeb; }
-        .book-tag { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 8px; width: fit-content; margin-bottom: 10px; text-transform: uppercase; }
-        .tag-0 { background: #ffe4e6; color: #e11d48; } .tag-1 { background: #dbeafe; color: #2563eb; }
-        .tag-2 { background: #dcfce7; color: #16a34a; } .tag-3 { background: #fef3c7; color: #d97706; }
-        .book-title { font-size: 18px; font-weight: 800; color: #1e293b; line-height: 1.3; margin-bottom: 15px; flex: 1; }
-        .book-footer { display: flex; justify-content: flex-end; }
-        .book-icon { width: 28px; height: 28px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .review-all-btn { width: 100%; padding: 20px; background: #fff; border: 2px dashed var(--red); color: var(--red); border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 20px; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 10px; }
     </style>
 </head>
 <body>
 <div class="container">
     <div id="screen-books" style="overflow-y:auto; padding:20px 0;">
-        <h2 style="text-align:center; margin-bottom:10px; font-size: 26px; font-weight: 800; color: #1e293b;">Select a Book</h2>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 25px;">Choose your textbook to start practicing vocabulary.</p>
-        <div id="review-all-area" style="padding: 0 10px;">
+        <h2 style="text-align:center; margin-bottom:25px; color: #1e293b;">Giáo trình</h2>
+        <div id="review-all-area" style="padding: 0 5px;">
             <button id="btn-master-review" class="review-all-btn" onclick="startMasterReview()">
-                <span>🚨 ÔN TẬP TỔNG HỢP</span>
+                <span>🚨 ÔN TẬP TỪ SAI (TẤT CẢ)</span>
                 <small id="review-count-badge" style="background:var(--red); color:#fff; padding:2px 8px; border-radius:10px; font-size:12px;">0</small>
             </button>
         </div>
-        <div id="book-list" class="book-grid"></div>
+        <div id="book-list" style="padding: 0 5px;"></div>
     </div>
 
     <div id="screen-range">
@@ -133,14 +136,14 @@
         </div>
 
         <div class="main-content">
-            <div class="flip-container">
-                <div id="flipper" class="flipper" onclick="flip()">
-                    <div class="box-wrapper box-front">
+            <div id="display-box" class="box-wrapper" onclick="flip()">
+                <div class="box-inner" id="box-inner">
+                    <div class="box-face box-front">
                         <div id="main-txt-container"><span id="main-txt"></span></div>
                         <div id="sub-txt"></div>
                     </div>
-                    <div class="box-wrapper box-back">
-                        <div id="main-txt-container-back"><span id="main-txt-back"></span></div>
+                    <div class="box-face box-back">
+                        <div id="back-txt"></div>
                     </div>
                 </div>
             </div>
@@ -202,19 +205,16 @@
         }
     });
 
-    function adjustFullWidth() {
-        const elFront = document.getElementById('main-txt');
-        const elBack = document.getElementById('main-txt-back');
-        const container = document.getElementById('main-txt-container');
-        const maxWidth = container.offsetWidth;
-
-        [elFront, elBack].forEach(el => {
-            if(!el) return;
-            let fontSize = 20; 
-            el.style.fontSize = fontSize + 'px';
-            while (el.offsetWidth < maxWidth - 20 && fontSize < 130) { fontSize += 2; el.style.fontSize = fontSize + 'px'; }
-            while (el.offsetWidth > maxWidth - 10 && fontSize > 20) { fontSize -= 1; el.style.fontSize = fontSize + 'px'; }
-        });
+    function adjustFontSize(elementId, containerId, maxFs) {
+        const el = document.getElementById(elementId);
+        const container = document.getElementById(containerId);
+        if (!el || !container) return;
+        let fs = maxFs;
+        el.style.fontSize = fs + 'px';
+        while (el.offsetWidth > container.offsetWidth - 20 && fs > 10) {
+            fs -= 2;
+            el.style.fontSize = fs + 'px';
+        }
     }
 
     async function load() {
@@ -230,19 +230,8 @@
 
     function renderBooks() {
         const lvs = [...new Set(db.map(r => r[0]))];
-        document.getElementById('book-list').innerHTML = lvs.map((l, i) => {
-            const count = db.filter(r => r[0] === l).length;
-            const colorIdx = i % 4;
-            return `
-                <div class="book-card color-${colorIdx}" onclick="openRangePicker('${l}')">
-                    <div class="book-tag tag-${colorIdx}">${count} Words</div>
-                    <div class="book-title">${l}</div>
-                    <div class="book-footer">
-                        <div class="book-icon">📖</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
+        document.getElementById('book-list').innerHTML = lvs.map((l, i) => `<div class="book-item-btn" style="background:${colors[i%4]};" onclick="openRangePicker('${l}')">${l}</div>`).join('');
     }
 
     function updateReviewButton() {
@@ -308,20 +297,21 @@
         document.getElementById('progress').innerText = `${cur + 1} / ${filtered.length}`;
         document.getElementById('pg-bar-fill').style.width = ((cur + 1) / filtered.length * 100) + '%';
         
-        // Reset lật
         isFlipped = false;
-        document.getElementById('flipper').classList.remove('flipped');
+        document.getElementById('display-box').classList.remove('is-flipped');
         
         const mainTxt = document.getElementById('main-txt');
-        const mainTxtBack = document.getElementById('main-txt-back');
         const subTxt = document.getElementById('sub-txt');
+        const backTxt = document.getElementById('back-txt');
 
-        if (displayMode === 'all') { mainTxt.innerText = item[2]; subTxt.innerText = item[3]; mainTxtBack.innerText = item[4]; }
-        else if (displayMode === 'hi') { mainTxt.innerText = item[2]; subTxt.innerText = ""; mainTxtBack.innerText = item[3]; }
-        else if (displayMode === 'vn') { mainTxt.innerText = item[2]; subTxt.innerText = ""; mainTxtBack.innerText = item[4]; }
-        else if (displayMode === 'hiv') { mainTxt.innerText = item[3]; subTxt.innerText = ""; mainTxtBack.innerText = item[4]; }
+        if (displayMode === 'all') { mainTxt.innerText = item[2]; subTxt.innerText = item[3]; backTxt.innerText = item[4]; }
+        else if (displayMode === 'hi') { mainTxt.innerText = item[2]; subTxt.innerText = ""; backTxt.innerText = item[3]; }
+        else if (displayMode === 'vn') { mainTxt.innerText = item[2]; subTxt.innerText = ""; backTxt.innerText = item[4]; }
+        else if (displayMode === 'hiv') { mainTxt.innerText = item[3]; subTxt.innerText = ""; backTxt.innerText = item[4]; }
         
-        adjustFullWidth();
+        adjustFontSize('main-txt', 'main-txt-container', 120);
+        adjustFontSize('back-txt', 'box-inner', 70);
+
         if(appMode === 'quiz') renderQuiz();
         if(appMode === 'input') {
             inputField.value = "";
@@ -333,12 +323,7 @@
     function flip() {
         if(appMode !== 'card') return;
         isFlipped = !isFlipped;
-        const flipper = document.getElementById('flipper');
-        if(isFlipped) {
-            flipper.classList.add('flipped');
-        } else {
-            flipper.classList.remove('flipped');
-        }
+        document.getElementById('display-box').classList.toggle('is-flipped');
     }
 
     function renderQuiz() {
@@ -352,11 +337,11 @@
     function checkQuiz(btn, sel, cor) {
         if(sel === cor) {
             btn.style.background = 'var(--success)'; btn.style.color = '#fff';
-            if(isReviewMode) markReview(false, false); 
+            if(isReviewMode) markReview(false, false);
             setTimeout(() => { if(cur < filtered.length - 1) { cur++; update(); } }, 500);
         } else { 
             btn.style.background = 'var(--red)'; btn.style.color = '#fff'; 
-            markReview(true, false); 
+            markReview(true, false);
         }
     }
 
